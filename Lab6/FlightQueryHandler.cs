@@ -15,10 +15,6 @@ public class FlightQueryHandler
             var selectedTaskInt = Int32.Parse(input!);
             selectedTask = (Task) Enum.Parse(typeof(Task), selectedTaskInt.ToString());
         }
-        catch (NullReferenceException e)
-        {
-            Console.WriteLine(e.Message);
-        }
         catch (FormatException e)
         {
             Console.WriteLine(e.Message);
@@ -50,6 +46,11 @@ public class FlightQueryHandler
             case Task.Airline:
             {
                 ExecuteAirline(flights);
+                break;
+            }
+            case Task.Delayed:
+            {
+                ExecuteDelayed(flights);
                 break;
             }
         }
@@ -85,8 +86,22 @@ public class FlightQueryHandler
         {
             Console.WriteLine(e.Message);
         }
-        
-        Console.WriteLine();
+    }
+    
+    private void ExecuteDelayed(List<Flight> flights)
+    {
+        var delayedFlights = new List<Flight>();
+
+        foreach (var flight in flights)
+        {
+            if (flight.Status.Equals(FlightStatus.Delayed))
+            {
+                delayedFlights.Add(flight);
+            }
+        }
+        Console.WriteLine("Delayed count = " + delayedFlights.Count);
+        delayedFlights.Sort((x, y) => DateTime.Compare(x.DepartureTime, y.DepartureTime));
+        CreateReport(delayedFlights, Task.Delayed);
     }
 
     private void CreateReport(List<Flight> flights, Task task)
@@ -98,7 +113,7 @@ public class FlightQueryHandler
         var json = flightsWrapper.ObtainJson();
         
         string directoryPath = "/Users/valdemar/Склад/Драгопед/Обʼєктно-орієнтоване програмування/Готове/Лаб6/Reports";
-        string filePath = directoryPath + "/" + nameof(task) + ".json";
+        string filePath = directoryPath + "/" + task + ".json";
         
         Directory.CreateDirectory(directoryPath);
         
@@ -114,6 +129,7 @@ public class FlightQueryHandler
         finally
         {
             writer.Close();
+            Console.WriteLine("Report created successfully");
         }
     }
     
