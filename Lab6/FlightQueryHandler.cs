@@ -53,6 +53,11 @@ public class FlightQueryHandler
                 ExecuteDelayed(flights);
                 break;
             }
+            case Task.Day:
+            {
+                ExecuteDay(flights);
+                break;
+            }
         }
     }
 
@@ -102,6 +107,50 @@ public class FlightQueryHandler
         Console.WriteLine("Delayed count = " + delayedFlights.Count);
         delayedFlights.Sort((x, y) => DateTime.Compare(x.DepartureTime, y.DepartureTime));
         CreateReport(delayedFlights, Task.Delayed);
+    }
+    
+    private void ExecuteDay(List<Flight> flights)
+    {
+        Console.WriteLine("Select day:");
+        var day = Console.ReadLine();
+        
+        Console.WriteLine("Select month:");
+        var month = Console.ReadLine();
+        
+        Console.WriteLine("Select year:");
+        var year = Console.ReadLine();
+        
+        try
+        {
+            if (day != null && month != null && year != null)
+            {
+                var sameDayFlights = new List<Flight>();
+                var inputDateTime = new DateTime(int.Parse(year), int.Parse(month), int.Parse(day));
+                
+                foreach (var flight in flights)
+                {
+                    if (IsSameDay(flight.DepartureTime, inputDateTime))
+                    {
+                        sameDayFlights.Add(flight);
+                    }
+                }
+                sameDayFlights.Sort((x, y) => DateTime.Compare(x.DepartureTime, y.DepartureTime));
+                CreateReport(sameDayFlights, Task.Day);
+            }
+            else
+            {
+                throw new FormatException();
+            }
+        }
+        catch (FormatException e)
+        {
+            Console.WriteLine(e.Message);
+        }
+    }
+
+    private bool IsSameDay(DateTime x, DateTime y)
+    {
+        return x.Day == y.Day && x.Month == y.Month && x.Year == y.Year;
     }
 
     private void CreateReport(List<Flight> flights, Task task)
