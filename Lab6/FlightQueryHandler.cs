@@ -63,6 +63,11 @@ public class FlightQueryHandler
                 ExecuteTime(flights);
                 break;
             }
+            case Task.LastHour:
+            {
+                ExecuteLastHour(flights);
+                break;
+            }
         }
     }
 
@@ -245,9 +250,63 @@ public class FlightQueryHandler
         }
     }
     
-    private void ExecuteTime2(List<Flight> flights)
+    private void ExecuteLastHour(List<Flight> flights)
     {
         
+        Console.WriteLine("Select: Last hour - 1, Choose time range - 2");
+        var input = Console.ReadLine();
+
+        try
+        {
+            if (input != null)
+            {
+                var option = int.Parse(input);
+                switch (option)
+                {
+                    case 1:
+                    {
+                        ExecuteLastHourOption(flights);
+                        break;
+                    }
+                    case 2:
+                    {
+                        ExecuteTimeRangeOption(flights);
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                throw new NullReferenceException();
+            }
+        }
+        catch (NullReferenceException e)
+        {
+            Console.WriteLine(e.Message);
+        }
+        catch (FormatException e)
+        {
+            Console.WriteLine(e.Message);
+        }
+    }
+
+    private void ExecuteLastHourOption(List<Flight> flights)
+    {
+        var lastHourFlights = new List<Flight>();
+        var lastHour = DateTime.Now.AddHours(-1);
+        foreach (var flight in flights)
+        {
+            if (GetMilliseconds(flight.DepartureTime) >= GetMilliseconds(lastHour))
+            {
+                lastHourFlights.Add(flight);
+            }
+        }
+        lastHourFlights.Sort((x, y) => DateTime.Compare(x.ArrivalTime, y.ArrivalTime));
+        CreateReport(lastHourFlights, Task.LastHour);
+    }
+
+    private void ExecuteTimeRangeOption(List<Flight> flights)
+    {
         Console.WriteLine("Select start second:");
         var startSecond = Console.ReadLine();
         
@@ -311,8 +370,8 @@ public class FlightQueryHandler
                         timeRangeDayFlights.Add(flight);
                     }
                 }
-                timeRangeDayFlights.Sort((x, y) => DateTime.Compare(x.DepartureTime, y.DepartureTime));
-                CreateReport(timeRangeDayFlights, Task.Time);
+                timeRangeDayFlights.Sort((x, y) => DateTime.Compare(x.ArrivalTime, y.ArrivalTime));
+                CreateReport(timeRangeDayFlights, Task.LastHour);
             }
             else
             {
