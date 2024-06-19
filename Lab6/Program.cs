@@ -1,3 +1,11 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿using Lab6;
 
-Console.WriteLine("Hello, World!");
+class Program
+{
+
+    static void Main()
+    {
+        new FlightInformationSystem().GetFlights();   
+    }
+    
+}
