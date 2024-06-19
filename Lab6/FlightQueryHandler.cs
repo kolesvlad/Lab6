@@ -197,13 +197,16 @@ public class FlightQueryHandler
         Console.WriteLine("Select end year:");
         var endYear = Console.ReadLine();
         
+        Console.WriteLine("Select destination:");
+        var destination = Console.ReadLine();
+        
         try
         {
-            
             if (startSecond != null && startMinute != null && startHour != null 
                 && startDay != null && startMonth != null && startYear != null
                 && endSecond != null && endMinute != null && endHour != null 
-                && endDay != null && endMonth != null && endYear != null)
+                && endDay != null && endMonth != null && endYear != null
+                && destination != null)
             {
                 var timeRangeDayFlights = new List<Flight>();
                 var startDateTime = new DateTime(
@@ -215,7 +218,8 @@ public class FlightQueryHandler
                 
                 foreach (var flight in flights)
                 {
-                    if (IsBetweenInclusive(flight.DepartureTime, startDateTime, endDateTime))
+                    if (flight.Destination.Equals(destination) 
+                        && IsBetweenInclusive(flight.DepartureTime, startDateTime, endDateTime))
                     {
                         timeRangeDayFlights.Add(flight);
                     }
