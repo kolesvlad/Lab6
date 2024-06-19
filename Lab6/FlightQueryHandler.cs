@@ -81,10 +81,15 @@ public class FlightQueryHandler
             if (input != null)
             {
                 var airlineFlights = new List<Flight>();
+                
+                Console.WriteLine("flight count = " + flights.Count);
 
                 foreach (var flight in flights)
                 {
-                    if (flight.Airline.Equals(input))
+                    Console.WriteLine("flight = " + flight.Airline);
+                    if (flight
+                        .Airline
+                        .Equals(input))
                     {
                         airlineFlights.Add(flight);
                     }
@@ -225,15 +230,14 @@ public class FlightQueryHandler
                 {
                     if (flight.Destination.Equals(destination))
                     {
-                        var departureMilliseconds = GetMilliseconds(flight.DepartureTime);
-                        var arrivalMilliseconds = GetMilliseconds(flight.ArrivalTime);
-                        var isAfterDeparture = departureMilliseconds >= GetMilliseconds(departureDateTime) ;
-                        var isBeforeArrival = arrivalMilliseconds <= GetMilliseconds(arrivalDateTime);
-
-                        if (isAfterDeparture && isBeforeArrival)
-                        {
-                            timeRangeDayFlights.Add(flight);
-                        }
+                        var isAfterDeparture = IsBetweenInclusive(
+                            flight.DepartureTime, departureDateTime, arrivalDateTime);
+                        var isBeforeArrival = IsBetweenInclusive(
+                            flight.ArrivalTime, departureDateTime, arrivalDateTime);
+                         if (isAfterDeparture && isBeforeArrival)
+                         {
+                             timeRangeDayFlights.Add(flight);
+                         }
                     }
                 }
                 timeRangeDayFlights.Sort((x, y) => DateTime.Compare(x.DepartureTime, y.DepartureTime));
@@ -365,7 +369,7 @@ public class FlightQueryHandler
                 foreach (var flight in flights)
                 {
                     if (flight.Destination.Equals(destination) 
-                        && IsBetweenInclusive(flight.DepartureTime, startDateTime, endDateTime))
+                        && IsBetweenInclusive(flight.ArrivalTime, startDateTime, endDateTime))
                     {
                         timeRangeDayFlights.Add(flight);
                     }
@@ -397,7 +401,7 @@ public class FlightQueryHandler
         ).TotalMilliseconds;
     }
 
-    private void CreateReport(List<Flight> flights, Task task)
+    public void CreateReport(List<Flight> flights, Task task)
     {
         var flightsWrapper = new FlightsWrapper
         {

@@ -8,8 +8,13 @@ class Program
         var system = new FlightInformationSystem();
         var handler = new FlightQueryHandler();
         
-        var flights = system.GetFlights();   
-        
+        TestFlights(system.GetFlights(), handler);
+
+        //TestFlights(system.GetFlightsWithErrors(), handler);
+    }
+
+    static void TestFlights(List<Flight> flights, FlightQueryHandler handler)
+    {
         var selectedTask = handler.PromptSelectTask();
         if (selectedTask != null)
         {
