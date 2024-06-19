@@ -161,6 +161,93 @@ public class FlightQueryHandler
     private void ExecuteTime(List<Flight> flights)
     {
         
+        Console.WriteLine("Select departure second:");
+        var departureSecond = Console.ReadLine();
+        
+        Console.WriteLine("Select departure minute:");
+        var departureMinute = Console.ReadLine();
+        
+        Console.WriteLine("Select departure hour:");
+        var departureHour = Console.ReadLine();
+        
+        Console.WriteLine("Select departure day:");
+        var departureDay = Console.ReadLine();
+        
+        Console.WriteLine("Select departure month:");
+        var departureMonth = Console.ReadLine();
+        
+        Console.WriteLine("Select departure year:");
+        var departureYear = Console.ReadLine();
+        
+        Console.WriteLine("Select arrival second:");
+        var arrivalSecond = Console.ReadLine();
+        
+        Console.WriteLine("Select arrival minute:");
+        var arrivalMinute = Console.ReadLine();
+        
+        Console.WriteLine("Select arrival hour:");
+        var arrivalHour = Console.ReadLine();
+        
+        Console.WriteLine("Select arrival day:");
+        var arrivalDay = Console.ReadLine();
+        
+        Console.WriteLine("Select arrival month:");
+        var arrivalMonth = Console.ReadLine();
+        
+        Console.WriteLine("Select arrival year:");
+        var arrivalYear = Console.ReadLine();
+        
+        Console.WriteLine("Select destination:");
+        var destination = Console.ReadLine();
+        
+        try
+        {
+            if (departureSecond != null && departureMinute != null && departureHour != null 
+                && departureDay != null && departureMonth != null && departureYear != null
+                && arrivalSecond != null && arrivalMinute != null && arrivalHour != null 
+                && arrivalDay != null && arrivalMonth != null && arrivalYear != null
+                && destination != null)
+            {
+                var timeRangeDayFlights = new List<Flight>();
+                var departureDateTime = new DateTime(
+                    int.Parse(departureYear), int.Parse(departureMonth), int.Parse(departureDay),
+                    int.Parse(departureHour), int.Parse(departureMinute), int.Parse(departureSecond));
+                var arrivalDateTime = new DateTime(
+                    int.Parse(arrivalYear), int.Parse(arrivalMonth), int.Parse(arrivalDay),
+                    int.Parse(arrivalHour), int.Parse(arrivalMinute), int.Parse(arrivalSecond));
+                
+                foreach (var flight in flights)
+                {
+                    if (flight.Destination.Equals(destination))
+                    {
+                        var departureMilliseconds = GetMilliseconds(flight.DepartureTime);
+                        var arrivalMilliseconds = GetMilliseconds(flight.ArrivalTime);
+                        var isAfterDeparture = departureMilliseconds >= GetMilliseconds(departureDateTime) ;
+                        var isBeforeArrival = arrivalMilliseconds <= GetMilliseconds(arrivalDateTime);
+
+                        if (isAfterDeparture && isBeforeArrival)
+                        {
+                            timeRangeDayFlights.Add(flight);
+                        }
+                    }
+                }
+                timeRangeDayFlights.Sort((x, y) => DateTime.Compare(x.DepartureTime, y.DepartureTime));
+                CreateReport(timeRangeDayFlights, Task.Time);
+            }
+            else
+            {
+                throw new FormatException();
+            }
+        }
+        catch (FormatException e)
+        {
+            Console.WriteLine(e.Message);
+        }
+    }
+    
+    private void ExecuteTime2(List<Flight> flights)
+    {
+        
         Console.WriteLine("Select start second:");
         var startSecond = Console.ReadLine();
         
