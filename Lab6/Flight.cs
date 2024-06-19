@@ -18,11 +18,6 @@ public class Flight
     public string AircraftType { get; set; }
     public string Terminal { get; set; }
 
-    public string ObtainJson()
-    {
-        return JsonSerializer.Serialize(this);
-    }
-
     public static FlightsWrapper? RetrieveFromJson(FileStream fileStream)
     {
         return JsonSerializer.Deserialize<FlightsWrapper>(fileStream);
@@ -33,6 +28,11 @@ public class FlightsWrapper
 {
     [JsonPropertyName("flights")]
     public List<Flight> Flights { get; set; }
+    
+    public string ObtainJson()
+    {
+        return JsonSerializer.Serialize(this);
+    }
 }
 
 public class TimeSpanConverter : JsonConverter<TimeSpan>

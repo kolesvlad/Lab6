@@ -5,8 +5,16 @@ class Program
 
     static void Main()
     {
-        new FlightInformationSystem().GetFlights();   
-        new FlightQueryHandler().PromptSelectTask();
+        var system = new FlightInformationSystem();
+        var handler = new FlightQueryHandler();
+        
+        var flights = system.GetFlights();   
+        
+        var selectedTask = handler.PromptSelectTask();
+        if (selectedTask != null)
+        {
+            handler.ExecuteTask(selectedTask.Value, flights);
+        }
     }
     
 }
