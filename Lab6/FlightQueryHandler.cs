@@ -58,6 +58,11 @@ public class FlightQueryHandler
                 ExecuteDay(flights);
                 break;
             }
+            case Task.Time:
+            {
+                ExecuteTime(flights);
+                break;
+            }
         }
     }
 
@@ -151,6 +156,95 @@ public class FlightQueryHandler
     private bool IsSameDay(DateTime x, DateTime y)
     {
         return x.Day == y.Day && x.Month == y.Month && x.Year == y.Year;
+    }
+    
+    private void ExecuteTime(List<Flight> flights)
+    {
+        
+        Console.WriteLine("Select start second:");
+        var startSecond = Console.ReadLine();
+        
+        Console.WriteLine("Select start minute:");
+        var startMinute = Console.ReadLine();
+        
+        Console.WriteLine("Select start hour:");
+        var startHour = Console.ReadLine();
+        
+        Console.WriteLine("Select start day:");
+        var startDay = Console.ReadLine();
+        
+        Console.WriteLine("Select start month:");
+        var startMonth = Console.ReadLine();
+        
+        Console.WriteLine("Select start year:");
+        var startYear = Console.ReadLine();
+        
+        Console.WriteLine("Select end second:");
+        var endSecond = Console.ReadLine();
+        
+        Console.WriteLine("Select end minute:");
+        var endMinute = Console.ReadLine();
+        
+        Console.WriteLine("Select end hour:");
+        var endHour = Console.ReadLine();
+        
+        Console.WriteLine("Select end day:");
+        var endDay = Console.ReadLine();
+        
+        Console.WriteLine("Select end month:");
+        var endMonth = Console.ReadLine();
+        
+        Console.WriteLine("Select end year:");
+        var endYear = Console.ReadLine();
+        
+        try
+        {
+            
+            if (startSecond != null && startMinute != null && startHour != null 
+                && startDay != null && startMonth != null && startYear != null
+                && endSecond != null && endMinute != null && endHour != null 
+                && endDay != null && endMonth != null && endYear != null)
+            {
+                var timeRangeDayFlights = new List<Flight>();
+                var startDateTime = new DateTime(
+                    int.Parse(startYear), int.Parse(startMonth), int.Parse(startDay),
+                    int.Parse(startHour), int.Parse(startMinute), int.Parse(startSecond));
+                var endDateTime = new DateTime(
+                    int.Parse(endYear), int.Parse(endMonth), int.Parse(endDay),
+                    int.Parse(endHour), int.Parse(endMinute), int.Parse(endSecond));
+                
+                foreach (var flight in flights)
+                {
+                    if (IsBetweenInclusive(flight.DepartureTime, startDateTime, endDateTime))
+                    {
+                        timeRangeDayFlights.Add(flight);
+                    }
+                }
+                timeRangeDayFlights.Sort((x, y) => DateTime.Compare(x.DepartureTime, y.DepartureTime));
+                CreateReport(timeRangeDayFlights, Task.Time);
+            }
+            else
+            {
+                throw new FormatException();
+            }
+        }
+        catch (FormatException e)
+        {
+            Console.WriteLine(e.Message);
+        }
+    }
+    
+    private bool IsBetweenInclusive(DateTime input, DateTime a, DateTime b)
+    {
+        double inputMilliseconds = GetMilliseconds(input);
+        return inputMilliseconds >= GetMilliseconds(a) && inputMilliseconds <= GetMilliseconds(b);
+    }
+
+    private double GetMilliseconds(DateTime dateTime)
+    {
+        return dateTime.ToUniversalTime().Subtract(
+            new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+        ).TotalMilliseconds;
     }
 
     private void CreateReport(List<Flight> flights, Task task)
