@@ -9,9 +9,9 @@ public class FlightInformationSystem
         var filePath = "/Users/valdemar/Склад/Драгопед/Обʼєктно-орієнтоване програмування/Готове/Лаб6/flights_data.json";
 
         using FileStream stream = File.OpenRead(filePath);
-        var flights = Flight.RetrieveFromJson(stream);
+        var flightsWrapper = Flight.RetrieveFromJson(stream);
         
-        Console.WriteLine(flights!.Count);
+        Console.WriteLine(flightsWrapper!.Flights.Count);
         
         return result;
     }
