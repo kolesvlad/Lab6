@@ -81,12 +81,9 @@ public class FlightQueryHandler
             if (input != null)
             {
                 var airlineFlights = new List<Flight>();
-                
-                Console.WriteLine("flight count = " + flights.Count);
 
                 foreach (var flight in flights)
                 {
-                    Console.WriteLine("flight = " + flight.Airline);
                     if (flight
                         .Airline
                         .Equals(input))
@@ -401,7 +398,7 @@ public class FlightQueryHandler
         ).TotalMilliseconds;
     }
 
-    public void CreateReport(List<Flight> flights, Task task)
+    private void CreateReport(List<Flight> flights, Task task)
     {
         var flightsWrapper = new FlightsWrapper
         {
