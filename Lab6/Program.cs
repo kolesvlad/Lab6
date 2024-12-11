@@ -15,6 +15,8 @@ class Program
 
     static void TestFlights(List<Flight> flights, FlightQueryHandler handler)
     {
+        if (flights.Count == 0) return;
+        
         var selectedTask = handler.PromptSelectTask();
         if (selectedTask != null)
         {

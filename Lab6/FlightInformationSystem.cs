@@ -5,27 +5,45 @@ public class FlightInformationSystem
 
     public List<Flight> GetFlights()
     {
-        var filePath = "/Users/valdemar/Склад/Драгопед/Обʼєктно-орієнтоване програмування/Готове/Лаб6/flights_data.json";
+        const string filePath = "/Users/valdemar/Склад/Драгопед/Обʼєктно-орієнтоване програмування/Готове/Лаб6/flights_data.json";
 
-        using FileStream stream = File.OpenRead(filePath);
-        var flightsWrapper = FlightsWrapper.RetrieveFromJson(stream);
-        
-        Console.WriteLine(flightsWrapper!.Flights.Count);
+        try
+        {
+            using FileStream stream = File.OpenRead(filePath);
+            var flightsWrapper = FlightsWrapper.RetrieveFromJson(stream);
 
-        return flightsWrapper.Flights;
+            Console.WriteLine(flightsWrapper!.Flights.Count);
+            return flightsWrapper.Flights;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+
+        return [];
     }
 
     public List<Flight> GetFlightsWithErrors()
     {
-        var filePath = "/Users/valdemar/Склад/Драгопед/Обʼєктно-орієнтоване програмування/Готове/Лаб6/flights_data_with_errors.json";
-        var contents = File.ReadAllText(filePath);
-        var flightsWrapper = FlightsWrapper.RetrieveFromJson(contents);
-        
-        foreach (var flight in flightsWrapper.Flights)
+        const string filePath = "/Users/valdemar/Склад/Драгопед/Обʼєктно-орієнтоване програмування/Готове/Лаб6/flights_data_with_errors.json";
+
+        try
         {
-            flight.FillNullFields();
+            var contents = File.ReadAllText(filePath);
+            var flightsWrapper = FlightsWrapper.RetrieveFromJson(contents);
+
+            foreach (var flight in flightsWrapper.Flights)
+            {
+                flight.FillNullFields();
+            }
+
+            return flightsWrapper.Flights;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
         }
 
-        return flightsWrapper.Flights;   
+        return [];
     }
 }

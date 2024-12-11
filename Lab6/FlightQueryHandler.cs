@@ -80,17 +80,7 @@ public class FlightQueryHandler
         {
             if (input != null)
             {
-                var airlineFlights = new List<Flight>();
-
-                foreach (var flight in flights)
-                {
-                    if (flight
-                        .Airline
-                        .Equals(input))
-                    {
-                        airlineFlights.Add(flight);
-                    }
-                }
+                var airlineFlights = flights.Where(flight => flight.Airline.Equals(input)).ToList();
                 airlineFlights.Sort((x, y) => DateTime.Compare(x.DepartureTime, y.DepartureTime));
                 CreateReport(airlineFlights, Task.Airline);
             }
@@ -107,17 +97,12 @@ public class FlightQueryHandler
     
     private void ExecuteDelayed(List<Flight> flights)
     {
-        var delayedFlights = new List<Flight>();
-
-        foreach (var flight in flights)
-        {
-            if (flight.Status.Equals(FlightStatus.Delayed))
-            {
-                delayedFlights.Add(flight);
-            }
-        }
+        var delayedFlights = flights.Where(flight => flight.Status.Equals(FlightStatus.Delayed)).ToList();
+        
         Console.WriteLine("Delayed count = " + delayedFlights.Count);
+        
         delayedFlights.Sort((x, y) => DateTime.Compare(x.DepartureTime, y.DepartureTime));
+        
         CreateReport(delayedFlights, Task.Delayed);
     }
     
@@ -136,17 +121,12 @@ public class FlightQueryHandler
         {
             if (day != null && month != null && year != null)
             {
-                var sameDayFlights = new List<Flight>();
                 var inputDateTime = new DateTime(int.Parse(year), int.Parse(month), int.Parse(day));
-                
-                foreach (var flight in flights)
-                {
-                    if (IsSameDay(flight.DepartureTime, inputDateTime))
-                    {
-                        sameDayFlights.Add(flight);
-                    }
-                }
+
+                var sameDayFlights = flights
+                    .Where(flight => IsSameDay(flight.DepartureTime, inputDateTime)).ToList();
                 sameDayFlights.Sort((x, y) => DateTime.Compare(x.DepartureTime, y.DepartureTime));
+                
                 CreateReport(sameDayFlights, Task.Day);
             }
             else
@@ -225,16 +205,15 @@ public class FlightQueryHandler
                 
                 foreach (var flight in flights)
                 {
-                    if (flight.Destination.Equals(destination))
+                    if (!flight.Destination.Equals(destination)) continue;
+                    
+                    var isAfterDeparture = IsBetweenInclusive(
+                        flight.DepartureTime, departureDateTime, arrivalDateTime);
+                    var isBeforeArrival = IsBetweenInclusive(
+                        flight.ArrivalTime, departureDateTime, arrivalDateTime);
+                    if (isAfterDeparture && isBeforeArrival)
                     {
-                        var isAfterDeparture = IsBetweenInclusive(
-                            flight.DepartureTime, departureDateTime, arrivalDateTime);
-                        var isBeforeArrival = IsBetweenInclusive(
-                            flight.ArrivalTime, departureDateTime, arrivalDateTime);
-                         if (isAfterDeparture && isBeforeArrival)
-                         {
-                             timeRangeDayFlights.Add(flight);
-                         }
+                        timeRangeDayFlights.Add(flight);
                     }
                 }
                 timeRangeDayFlights.Sort((x, y) => DateTime.Compare(x.DepartureTime, y.DepartureTime));
@@ -293,16 +272,11 @@ public class FlightQueryHandler
 
     private void ExecuteLastHourOption(List<Flight> flights)
     {
-        var lastHourFlights = new List<Flight>();
         var lastHour = DateTime.Now.AddHours(-1);
-        foreach (var flight in flights)
-        {
-            if (GetMilliseconds(flight.DepartureTime) >= GetMilliseconds(lastHour))
-            {
-                lastHourFlights.Add(flight);
-            }
-        }
+        var lastHourFlights = flights
+            .Where(flight => GetMilliseconds(flight.DepartureTime) >= GetMilliseconds(lastHour)).ToList();
         lastHourFlights.Sort((x, y) => DateTime.Compare(x.ArrivalTime, y.ArrivalTime));
+        
         CreateReport(lastHourFlights, Task.LastHour);
     }
 
@@ -365,13 +339,15 @@ public class FlightQueryHandler
                 
                 foreach (var flight in flights)
                 {
-                    if (flight.Destination.Equals(destination) 
-                        && IsBetweenInclusive(flight.ArrivalTime, startDateTime, endDateTime))
+                    if (flight.Destination.Equals(destination) &&
+                        IsBetweenInclusive(flight.ArrivalTime, startDateTime, endDateTime))
                     {
                         timeRangeDayFlights.Add(flight);
                     }
                 }
-                timeRangeDayFlights.Sort((x, y) => DateTime.Compare(x.ArrivalTime, y.ArrivalTime));
+                timeRangeDayFlights
+                    .Sort((x, y) => DateTime.Compare(x.ArrivalTime, y.ArrivalTime));
+                
                 CreateReport(timeRangeDayFlights, Task.LastHour);
             }
             else
@@ -387,7 +363,7 @@ public class FlightQueryHandler
     
     private bool IsBetweenInclusive(DateTime input, DateTime a, DateTime b)
     {
-        double inputMilliseconds = GetMilliseconds(input);
+        var inputMilliseconds = GetMilliseconds(input);
         return inputMilliseconds >= GetMilliseconds(a) && inputMilliseconds <= GetMilliseconds(b);
     }
 
@@ -406,11 +382,19 @@ public class FlightQueryHandler
         };
         var json = flightsWrapper.ObtainJson();
         
-        string directoryPath = "/Users/valdemar/Склад/Драгопед/Обʼєктно-орієнтоване програмування/Готове/Лаб6/Reports";
-        string filePath = directoryPath + "/" + task + ".json";
-        
-        Directory.CreateDirectory(directoryPath);
-        
+        var directoryPath = "/Users/valdemar/Склад/Драгопед/Обʼєктно-орієнтоване програмування/Готове/Лаб6/Reports";
+        var filePath = directoryPath + "/" + task + ".json";
+
+        try
+        {
+            Directory.CreateDirectory(directoryPath);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            return;
+        }
+
         using StreamWriter writer = new StreamWriter(filePath);
         try
         {
