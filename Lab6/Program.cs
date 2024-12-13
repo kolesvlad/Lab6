@@ -8,12 +8,12 @@ class Program
         var system = new FlightInformationSystem();
         var handler = new FlightQueryHandler();
         
-        TestFlights(system.GetFlights(), handler);
+        CheckFlights(system.GetFlights(), handler);
 
-        //TestFlights(system.GetFlightsWithErrors(), handler);
+        //CheckFlights(system.GetFlightsWithErrors(), handler);
     }
 
-    static void TestFlights(List<Flight> flights, FlightQueryHandler handler)
+    static void CheckFlights(List<Flight> flights, FlightQueryHandler handler)
     {
         if (flights.Count == 0) return;
         
